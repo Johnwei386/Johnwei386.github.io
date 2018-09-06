@@ -64,7 +64,7 @@ gitalk:
   enable: true    #是否开启Gitalk评论
   clientID: f247712f71676b6d280a                            #生成的clientID
   clientSecret: b87043ee0b741108946ec365c3fd99b0b0a36da9    #生成的clientSecret
-  repo: JohnWei.github.io    #仓库名称
+  repo: tianqichongzhen.github.io    #仓库名称
   owner: JohnWei    #github用户名
   admin: JohnWei
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
