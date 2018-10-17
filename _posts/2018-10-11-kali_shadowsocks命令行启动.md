@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      shadowsocks配置
-subtitle:   在命令行下启动shadowsocks
+title:      在命令行下启动shadowsocks
+subtitle:   shadowsocks配置
 date:       2018-10-11
 author:     JW
 header-img: img/jwblog/post-shadowsocks.png
