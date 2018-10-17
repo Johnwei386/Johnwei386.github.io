@@ -4,7 +4,7 @@ title:      shadowsocks命令行启动
 subtitle:   配置shadowsocks
 date:       2018-10-17
 author:     JW
-header-img: img/jwblog/post-shadowsocks.png
+header-img: img/jwblog/post-background-all.png
 catalog: true
 tags:
     - linux
@@ -37,5 +37,6 @@ tags:
 ## 启动shadowsocks客户端
 由于更新了linux系统，基于debian9的最新版Kali-linux，导致原来pip库的shadowsocks包无法启动，因此下载最新的软件版本：
 > pip install -U git+https://github.com/shadowsocks/shadowsocks.git@master
+
 启动本地客户端：
 > sslocal -c /etc/shadowsocks.json -d start
