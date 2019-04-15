@@ -18,17 +18,25 @@ Raspberry pi B+的原生系统是基于Debian7.5开发的一款系统，自己�
  # inittab This file describes how the INIT process should set up
 
  # Default runlevel. The runlevels used by RHS are:
+ 
  #   0 - halt (Do NOT set initdefault to this)
+ 
  #   1 - Single user mode
+ 
  #   2 - Multiuser, without NFS (The same as 3, if you do not have networking)
+ 
  #   3 - Full multiuser mode
+ 
  #   4 - unused
+ 
  #   5 - X11
+ 
  #   6 - reboot (Do NOT set initdefault to this)
- # 
+
 1) id:3:initdefault:
 
  # System initialization.
+ 
 2) si::sysinit:/etc/init.d/rcS
 
 3) l0:0:wait:/etc/rc.d/rc 0
