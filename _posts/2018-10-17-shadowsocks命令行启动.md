@@ -4,7 +4,7 @@ title:      shadowsocks命令行启动
 subtitle:   配置shadowsocks
 date:       2018-10-17
 author:     JW
-header-img: img/jwblog/post-background-all.png
+header-img: img/post-bg-default.png
 catalog: true
 tags:
     - linux
