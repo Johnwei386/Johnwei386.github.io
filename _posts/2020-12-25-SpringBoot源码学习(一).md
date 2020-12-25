@@ -20,6 +20,24 @@ SpringBoot是Spring提出的一个用来解决配置地狱问题现行的主流J
 
 ![](/img/jwblog/springboot/springEcosystem.png)
 
+## @AliasFor注解
+**@AliasFor**是一个别名注解，只作用于方法，是一个方法级的注解，其属性有三：value、attribute和annotation。如下源码所示，在AliasFor注解代码中，value和attribute通过分别引用AliasFor注解声明各自的别名，这说明AliasFor是可以自引用的一个注解接口。
+```java
+@AliasFor("attribute")
+	String value() default "";
+	
+	@AliasFor("value")
+	String attribute() default "";
+```
+
+AliasFor注解的作用有二：①声明别名，②指定方法的作用范围(即方法或属性所属的注解)。以@SpringBootApplication为例，其源码的一部分如下所示，scanBasePackages方法的返回值正是ComponentScan注解的basePackages属性的值，该属性指定自动加载机制扫描包中所有组件的基础包位置(如com.snail.arxiv等)，这里的AliasFor中的annotation属性指定所修饰方法所属的注解，attribute属性指定该注解的某个属性，这个属性的值正是AliasFor所修饰方法的返回值。
+```java
+@AliasFor(annotation = EnableAutoConfiguration.class)
+	String[] excludeName() default {};
+	
+@AliasFor(annotation = ComponentScan.class, attribute = "basePackages")
+	String[] scanBasePackages() default {};
+```
 
 
 
