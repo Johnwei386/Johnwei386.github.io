@@ -20,6 +20,64 @@ SpringBoot是Spring提出的一个用来解决配置地狱问题现行的主流J
 
 ![](/img/jwblog/springboot/springEcosystem.png)
 
+以下所有SpringBoot源代码研究全部基于SpringBoot 2.4.1和SpringFramework 5.3.2
+
+## @SpringBootApplication
+**@SpringBootApplication**是SpringBoot的一个应用入口级注解，它是一个类和接口级别的注解，标示了该类是一个SpringBoot应用，一个SpringBoot应用程序只有一个用@SpringBootApplication注解的主类，@SpringBootApplication注解是@SpringBootConfiguration、@EnableAutoConfiguration和@ComponentScan这三个注解的集合体，并引用了@Inherited注解，这样所有继承自由@SpringBootApplication注解标注的类的子类会自动继承父类的注解，即@SpringBootApplication注解
+
+@SpringBootApplication中的proxyBeanMethods属性指示是否对容器中的Bean开启CGLIB代理，CGLIB动态代理是Spring框架使用的用来实现AOP动态织入代码到class字节码中的技术实现方案。SpringBoot的所有注解最终能影响到实际的java类实例，其核心便是通过JVM虚拟机在执行代码时通过动态代理的方式(如CGLIB方法)织入注解代码到实例的class字节码文件中，实现AOP面向切面编程的重要编程思想。
+
+proxyBeanMethods属性是自SpringBoot 2.2后增加的一个新属性，默认值为true，它使得开发人员在开发过程中，容器中的bean可以一直是同一个实例，也可以每次都生成新的实例。若设置为true，则打开CGLIB动态代理bean的生成，容器中任意时刻只有一个bean实例，这也是解决组件依赖问题的一个解决方案。
+
+## @SpringBootConfiguration
+**@SpringBootConfiguration**提供了一个SprintBoot版本的Configuration注解，它自己就包含有@Configuration注解，可以作为是@Configuration注解的替换版本。所有Spring应用应该只包含有一个@SpringBootConfiguration注解，然后大部分惯用的SpringBoot程序和该程序下的其他类将从@SpringBootApplication注解继承@SpringBootConfiguration注解。
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Configuration
+public @interface SpringBootConfiguration {
+    @AliasFor(annotation = Configuration.class)
+	boolean proxyBeanMethods() default true;
+}
+```
+
+## @EnableAutoConfiguration
+**@EnableAutoConfiguration**开启了Spring应用上下文的自动配置功能，它基于用户设置的*classpath*和已经用户定义好的bean配置进行自动配置，自动配置的过程自动计算依赖关系并将依赖的包或类等载入容器。用户可以通过设置@EnableAutoConfiguration的exclude和excludeName属性排除掉不进行自动配置的类。@EnableAutoConfiguration一般通过@SpringBootApplication注解来实现引用，不单独用来标注类，或者将其放在根包(应用根目录)，这样所有的子包和所有的类都可以被搜索到。
+
+符合自动配置机制的类一般是带有Spring的@Configuration注解的类，可以通过**SpringFactoriesLoader**机制定位寻找。通常，自动配置的beans是@Conditional、@ConditionalOnClass和@ConditionalOnMissingBean这三种beans。
+
+```java
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import(AutoConfigurationImportSelector.class)
+public @interface EnableAutoConfiguration {
+	/**
+	 * Environment property that can be used to override when auto-configuration is
+	 * enabled.
+	 */
+	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+
+	/**
+	 * Exclude specific auto-configuration classes such that they will never be applied.
+	 * @return the classes to exclude
+	 */
+	Class<?>[] exclude() default {};
+
+	/**
+	 * Exclude specific auto-configuration class names such that they will never be
+	 * applied.  返回的是一个字符串数组，数组的每个元素是一个类名
+	 * @return the class names to exclude
+	 * @since 1.3.0
+	 */
+	String[] excludeName() default {};
+
+}
+```
+
 ## @AliasFor注解
 **@AliasFor**是一个别名注解，只作用于方法，是一个方法级的注解，其属性有三：value、attribute和annotation。如下源码所示，在AliasFor注解代码中，value和attribute通过分别引用AliasFor注解声明各自的别名，这说明AliasFor是可以自引用的一个注解接口。
 ```java
