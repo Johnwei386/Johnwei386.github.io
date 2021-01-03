@@ -55,28 +55,21 @@ public @interface SpringBootConfiguration {
 @AutoConfigurationPackage
 @Import(AutoConfigurationImportSelector.class)
 public @interface EnableAutoConfiguration {
-	/**
-	 * Environment property that can be used to override when auto-configuration is
-	 * enabled.
-	 */
 	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
-
-	/**
-	 * Exclude specific auto-configuration classes such that they will never be applied.
-	 * @return the classes to exclude
-	 */
 	Class<?>[] exclude() default {};
-
-	/**
-	 * Exclude specific auto-configuration class names such that they will never be
-	 * applied.  返回的是一个字符串数组，数组的每个元素是一个类名
-	 * @return the class names to exclude
-	 * @since 1.3.0
-	 */
 	String[] excludeName() default {};
 
 }
 ```
+
+## @AutoConfigurationPackage
+自动配置包注解，将主应用程序所在包的文件载入容器。通过`@Import(AutoConfigurationPackages.Registrar.class)`载入它的basePackages和basePackageClasses属性所包含的类到容器中。Registrar是AutoConfigurationPackages类的一个静态内部类成员，Registrar通过调用AutoConfigurationPackages类的register方法将@AutoConfigurationPackages注解的*basePackages*和*basePackageClasses*下的组件类名称传给BeanDefinitionRegistry，BeanDefinitionRegistry是用来注册和访问所有bean实例的接口，每个bean实例由BeanDefinition描述。
+
+## @Import
+**@Import**导入组件类到容器，导入的类通常是@Configuration注解标注的类，它等价于Spring XML配置文件规范中的`<import/>`标记，它可以导入带有@Configuration注解的类和*ImportSelector*和*ImportBeanDefinitionRegistrar*的实现类。在@Configuration注解类下声明的@Bean部件通过@Autowired注解实现自动装入，Spring通过@Autowired注解实现Bean的依赖注入。
+
+@import注解的使用类似于`@Import(AutoConfigurationPackages.Registrar.class)`，这是在@AutoConfigurationPackages注解源码中的例子，@import载入AutoConfigurationPackages.Registrar配置类。
+
 
 ## @AliasFor注解
 **@AliasFor**是一个别名注解，只作用于方法，是一个方法级的注解，其属性有三：value、attribute和annotation。如下源码所示，在AliasFor注解代码中，value和attribute通过分别引用AliasFor注解声明各自的别名，这说明AliasFor是可以自引用的一个注解接口。
@@ -97,5 +90,28 @@ AliasFor注解的作用有二：①声明别名，②指定方法的作用范围
 	String[] scanBasePackages() default {};
 ```
 
+## SpringBoot 自动配置研究
+在@EnableAutoConfiguration引入AutoConfigurationImportSelector到容器中，AutoConfigurationImportSelector类在selectImports方法中调用getAutoConfigurationEntry方法实现自动配置，它通过调用getCandidateConfigurations方法得到需要载入容器并进行自动配置的类清单。getCandidateConfigurations方法中通过SpringFactoriesLoader类中的loadFactoryNames方法得到清单，loadFactoryNames方法则调用loadSpringFactories方法得到清单。
 
+在loadSpringFactories方法中，调用类加载器的getResources()方法，传入参数"META-INF/spring.factories"，"META-INF/spring.factories"即要获取的资源名称，getResources将先去父类加载器寻找资源，与双亲委托模式相似，父类一般为平台类加载器，子类即当前的类加载器为应用类加载器。
 
+寻找资源的顺序为，先去类加载器已加载的模块中去寻找资源，然后去类路径下去寻找资源，如在类路径中包含在当前项目下的*target/classes*路径，它指示当在编译java项目时需要依赖模块的支持时，类加载器去该目录下寻找已经编译好的模块。
+
+在匹配寻找所有的类路径之后，返回一个包含有资源的类路径URL类，然后如下代码所示解析资源，得到载入和进行自动配置的类清单，在SpringBoot项目中只有在spring-boot包和spring-boot-autoconfigure包的META-INF目录下包含有spring.factories文件。
+```java
+Enumeration<URL> urls = classLoader.getResources(FACTORIES_RESOURCE_LOCATION);
+while (urls.hasMoreElements()) {
+    URL url = urls.nextElement();
+	UrlResource resource = new UrlResource(url);
+	Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+	for (Map.Entry<?, ?> entry : properties.entrySet()) {
+		String factoryTypeName = ((String) entry.getKey()).trim();
+		String[] factoryImplementationNames =
+					 StringUtils.commaDelimitedListToStringArray((String) entry.getValue());
+		for (String factoryImplementationName : factoryImplementationNames) {
+			result.computeIfAbsent(factoryTypeName, key -> new ArrayList<>())
+						.add(factoryImplementationName.trim());
+		}
+	}
+}
+```
