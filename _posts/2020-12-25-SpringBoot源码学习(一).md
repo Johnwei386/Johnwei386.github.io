@@ -65,6 +65,24 @@ public @interface EnableAutoConfiguration {
 ## @AutoConfigurationPackage
 自动配置包注解，将主应用程序所在包的文件载入容器。通过`@Import(AutoConfigurationPackages.Registrar.class)`载入它的basePackages和basePackageClasses属性所包含的类到容器中。Registrar是AutoConfigurationPackages类的一个静态内部类成员，Registrar通过调用AutoConfigurationPackages类的register方法将@AutoConfigurationPackages注解的*basePackages*和*basePackageClasses*下的组件类名称传给BeanDefinitionRegistry，BeanDefinitionRegistry是用来注册和访问所有bean实例的接口，每个bean实例由BeanDefinition描述。
 
+AutoConfigurationPackages类下有一个静态内部类PackageImports，它封装了SpringBoot自动导包的具体实现，下面的代码便是PackageImports的核心，它有一个私有属性packageNames，用来保存需要导入到容器中的所有包名称，然后在构造方法里，初始化生成packageNames，如何生成呢？它先去查找AutoConfigurationPackage的basePackages和basePackageClasses属性指定的包，如果这两个属性为空，则说明没有用户自定义的初始化导包目录，则用*packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));*导入当前类所在的包到容器中，如此就实现了自动导入本开发项目所在的包中的类和资源到容器中。
+```java
+private final List<String> packageNames;
+
+PackageImports(AnnotationMetadata metadata) {
+			AnnotationAttributes attributes = AnnotationAttributes
+.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
+			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
+				packageNames.add(basePackageClass.getPackage().getName());
+			}
+			if (packageNames.isEmpty()) {
+				packageNames.add(ClassUtils.getPackageName(metadata.getClassName()));
+			}
+			this.packageNames = Collections.unmodifiableList(packageNames);
+}
+```
+
 ## @Import
 **@Import**导入组件类到容器，导入的类通常是@Configuration注解标注的类，它等价于Spring XML配置文件规范中的`<import/>`标记，它可以导入带有@Configuration注解的类和*ImportSelector*和*ImportBeanDefinitionRegistrar*的实现类。在@Configuration注解类下声明的@Bean部件通过@Autowired注解实现自动装入，Spring通过@Autowired注解实现Bean的依赖注入。
 
@@ -115,3 +133,5 @@ while (urls.hasMoreElements()) {
 	}
 }
 ```
+
+**@ComponentScan**配置组件扫描，与Configuration类一起使用，提供和Spring XML元素相同的支持。它有两个属性: basePackageClasses和basePackages(或对应的别名value)指定特定的包去扫描组件。**若未设置这些属性，即未声明需要扫描的包，则去声明此注解的类所在的包扫描组件**。
