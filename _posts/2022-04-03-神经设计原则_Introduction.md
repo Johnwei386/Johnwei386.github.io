@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      神经设计原则1
+title:      神经设计原则_Introduction
 subtitle:   Introdution
 date:       2022-04-03
 author:     Johnwei386
@@ -15,7 +15,7 @@ tags:
 
 一台笔记本电脑在容量和功耗方面类似于人脑——但它很愚蠢。深蓝是 IBM 制造的超级计算机，它在国际象棋上击败了大师加里卡斯帕罗夫，它的体积比普通笔记本电脑大 100,000 倍，消耗的功率也高 100,000 倍（Figure  I.1）。然而，尽管深蓝在国际象棋方面表现出色，但它依旧很愚蠢，相当于电子白痴。计算机以光速运行，而大脑却运行的很慢，那么，大脑的优势在哪里呢？一个简短的回答是，大脑采用了卓越设计的混合架构。更长的答案是这本书——其目的是确定这种计算效率的来源。
 
-![](/img/jwblog/neuralDesign/FigI_1.png)
+![](../img/jwblog/neuralDesign/FigI_1.png)
 
 > **Figure I.1**
 > **How do neural circuits use space and power so efficiently?** Computer: Image 
