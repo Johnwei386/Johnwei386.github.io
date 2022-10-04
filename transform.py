@@ -20,8 +20,6 @@ def handleFile(upDir, file, isGit=False):
                     a = m2.group(1)
                     if isGit:
                         a = '![]({}'.format(a)
-                    else:
-                        a = '![](../{}'.format(a)
                     all_cont.append(a)
                 else:
                     all_cont.append(line)
@@ -37,4 +35,3 @@ if __name__ == '__main__':
     files = os.listdir(postDir)
     for file in files:
         handleFile(postDir, file, isGit=True)  # 将图片路径转换为web可用
-        #handleFile(postDir, file, isGit=False) # 将图片路径转换为Typora可用
