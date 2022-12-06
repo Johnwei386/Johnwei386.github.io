@@ -458,14 +458,13 @@ sudo systemctl start docker
 
    ```bash
    # 启动容器,开启伪终端-t, 打开输入流-i, 后台运行-d
-   docker  -itd  abc/tttccc:1.0.1
+   docker  run -itd  abc/tttccc:1.0.1
    
    # 进入容器, 69d1fdc是容器编号,使用docker ps -a查看
-   docker  exec  -i  69d1fdc  bash
-   
+   docker  exec  -it  69d1fdc  bash
    
    ```
-
+   
 2. 启动容器时暴露端口到外部环境
 
    ```bash
@@ -489,6 +488,42 @@ sudo systemctl start docker
    docker  load  --input  镜像名.tar
    ```
 
-4. 
+4. 停止正在运行的容器和异常状态下的容器并删除这些容器
+
+   ```bash
+   docker stop $(docker ps -a | grep "Up" | awk '{print $1 }')
+   docker stop $(docker ps -a | grep "Exited" | awk '{print $1 }')
+   docker rm $(docker ps -a | grep "Exited" | awk '{print $1 }')
+   ```
+
+5. 查看正在运行的容器
+
+   ```bash
+   docker ps -a
+   ```
+
+6. 查看所有镜像
+
+   ```bash
+   docker images
+   ```
+
+7. 修改容器后提交修改后的新镜像
+
+   ```bash
+   # 1.查看正在运行的容器
+   docker  ps -a
+   
+   # 2. 进入正在运行的容器内
+   docker exec –it  3bd0eef03413 bash  
+   
+   # 3. 进入容器后, 就可以修改镜像了, 比如修改镜像中已经部署的代码或者安装新的软件或包等;
+   # 修改完成之后, exit 退出容器
+   
+   # 4. 提交你刚才修改的镜像, 新的镜像名称为demo, 版本为1.0.3
+   docker  commit  3bd0eef03413  demo:1.0.3  
+   ```
+
+8. 
 
 
