@@ -245,7 +245,7 @@ $ ./VBoxLinuxAdditions.run
    # 输入临时密码,登入mysql服务器
    mysql -u root -p   
    # 修改密码
-   mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'Tua2pegh.';
+   mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '123334556.';
    mysql> FLUSH PRIVILEGES;
    ```
 
@@ -313,7 +313,7 @@ sudo passwd soft    # 修改密码
 5. 访问控制台查看是否启动成功
 
    ```bash
-   http://51.128.22.11:9802/nacos
+   http://192.168.2.11:8802/nacos
    ```
 
 
@@ -336,7 +336,7 @@ sudo passwd soft    # 修改密码
    ```bash
    # Set up Minio environment variables
    export MINIO_ROOT_USER=minioadmin
-   export MINIO_ROOT_PASSWORD=jos8iYae
+   export MINIO_ROOT_PASSWORD=123445566
    ```
 
 4. 设置执行脚本
@@ -346,7 +346,7 @@ sudo passwd soft    # 修改密码
    MINIO_ELF_FILE="/soft/minio"                     # 可执行文件目录
    MINIO_DATA_DIR="/was/minio/data"        # Minio数据目的
    IP_ADDR=`hostname -i`
-   PORT="9893"
+   PORT="8561"
    
    # 启动minio，nohup为不挂起方式启动进程，即后台进程
    nohup $MINIO_ELF_FILE server $MINIO_DATA_DIR --address $IP_ADDR:$PORT > minio.out 2>&1 &
@@ -392,7 +392,7 @@ sudo systemctl start docker
 
    ```bash
    # 在/root/docker目录下执行
-   scp * deploy@51.128.230.11:~/docker/
+   scp * deploy@192.168.230.11:~/docker/
    ```
 
 3. 依次执行如下安装命令以安装docker
@@ -525,5 +525,4 @@ sudo systemctl start docker
    ```
 
 8. 
-
 
