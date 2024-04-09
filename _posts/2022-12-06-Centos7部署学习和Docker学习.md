@@ -524,6 +524,12 @@ sudo systemctl start docker
    docker  commit  3bd0eef03413  demo:1.0.3  
    ```
 
-8. 
+8. 删除镜像
+
+   ```bash
+   docker  rmi  redis:latest
+   ```
+
+9. 
 
 

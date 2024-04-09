@@ -140,6 +140,8 @@ sudo chroot "/mnt/boot-sav/nvme0n1p3" apt-get install -y grub-efi
 
    ```bash
    chromium-browser --proxy="socks5://127.0.0.1:1080"
+   # chrome浏览器安装
+   google-chrome --proxy-server="socks5://127.0.0.1:1080"
    ```
 
 6. 解决Ubuntu 18.04与Win10系统时间不一致问题
