@@ -242,12 +242,28 @@ sudo chroot "/mnt/boot-sav/nvme0n1p3" apt-get install -y grub-efi
 
    ```bash
    sudo update-initramfs -u
+   
+   # 在centos系, 没有initramfs工具, 使用dracut工具替换
+   sudo  dracut  -f
    ```
+
+   Dracut是一款Linux系统下的initramfs生成器。在Linux启动过程中，initramfs作为一个虚拟的根文件系统存在于内存中，它的作用是提供启动所需的驱动程序和文件系统模块。dracut命令可以用来创建或更新initramfs， 参数说明：
+
+   > 1. -f, --force: 强制生成initramfs，即使已经存在；
+   > 2. -H, --hostonly: 仅添加主机上已加载模块的驱动程序到initramfs中；
+   > 3. -N, --nomdadmconf: 不在initramfs中包含mdadm.conf文件；
+   > 4. -o, --omit: 省略指定的模块或驱动程序；
+   > 5. -m, --add: 添加指定的模块或驱动程序；
+   > 6. -v, --verbose: 显示详细的日志信息；
+   > 7. -k, --kver: 指定内核版本号；
 
 3. 安装基本编译组件
 
    ```bash
    sudo  apt-get  install  build-essential
+   
+   # centos系使用下面命令进行安装
+   sudo  yum  install  make  automake  gcc  gcc-c++  kernel-devel
    ```
 
 4. 下载适配Ubuntu 18.04的Cuda和适配该Cuda的cuDNN, 这里下载cuda_11.4.2_470.57.02_linux和cuDNN_8.2.4, cuDNN下载"[cuDNN Library for Linux (x86_64)](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.2.4/11.4_20210831/cudnn-11.4-linux-x64-v8.2.4.15.tgz)".
@@ -287,7 +303,7 @@ sudo chroot "/mnt/boot-sav/nvme0n1p3" apt-get install -y grub-efi
    Logfile is /var/log/cuda-installer.log
    ```
 
-8.  编辑/etc/profile文件, 在profile文件的最后增加以下内容, 重启生效.
+8. 编辑/etc/profile文件, 在profile文件的最后增加以下内容, 重启生效.
 
    ```bah
    export  PATH=$PATH:/usr/local/cuda-11.4/bin
@@ -360,6 +376,8 @@ sudo chroot "/mnt/boot-sav/nvme0n1p3" apt-get install -y grub-efi
     ```
     则cuda安装成功！
 
+    
+
 ## 8. 安装cuDNN
 ```bash
 # 在nvidia官网下载cudnn到preInstalledSoft目录
@@ -372,3 +390,20 @@ sudo cp cuda/lib64/libcudnn* /usr/local/cuda-11.4/lib64
 sudo chmod a+r /usr/local/cuda-11.4/include/cudnn.h 
 sudo chmod a+r /usr/local/cuda-11.4/lib64/libcudnn*
 ```
+
+
+
+## 9. 卸载Nvidia驱动
+
+如果以前是通过ppa源安装的，可以通过下面命令卸载：
+
+```bash
+sudo  apt-get  remove  --purge  nvidia*
+```
+
+如果以前是通过runfile安装的，可以通过下面命令卸载：
+
+```bash
+sudo  ./NVIDIA-Linux-x86_64-430.09.run  --uninstall     #（430.09为我使用的版本号，要自行修改对应版本）
+```
+
